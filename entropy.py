@@ -66,7 +66,7 @@ class Entropy:
         bytes_between_samples = file_size_nearest_chunk/sample_size
 
         if bytes_between_samples < chunk_size:
-            raise ValueError(f"Sample size is too large relative to file size, there are only {bytes_between_samples} bytes between samples. Needs at least 4096 bytes between samples.")
+            raise ValueError(f"Sample size is too large relative to file size, there are only {bytes_between_samples:.0f} bytes between samples. Needs at least 4096 bytes between samples.")
 
         positions_to_sample = [i for i in range(0, file_size_nearest_chunk, int(bytes_between_samples))]
 
@@ -85,11 +85,13 @@ class Entropy:
 
         return self.calculate_entropy()
 
-def entropy_argparse():
+def main():
     parser = argparse.ArgumentParser(description='Calculate the entropy of a file.')
     parser.add_argument('path', nargs='?', default=None, help='path to the file to calculate entropy of')
     parser.add_argument('-p', '--picker', action='store_true', help='use the OS file picker (any path supplied is ignored)')
     parser.add_argument('-s', '--sparse', help='number of samples to gather (supports k, m, b or g, t suffixes)', type=str)
+    parser.add_argument('-r', '--is-random-data', action='store_true', help='indicate if data is close enough to random to be considered random data (likely raw encrypted data)')
+
     args = parser.parse_args()
 
     entropy_calculator = Entropy()
@@ -110,11 +112,22 @@ def entropy_argparse():
                 entropy = entropy_calculator.sample_file(file_path, sample_size, show_progress=True)
             else:
                 entropy = entropy_calculator.from_file(file_path, show_progress=True)
-            return entropy
+            
+            if entropy is None:
+                print("Could not extract entropy value from file. This is an unexpected error and should be reported to the repo contributors.")
+                return
+
+            if args.is_random_data:
+                if float(8)-entropy < 0.0001:
+                    print("File is (virtually) truly random")
+                else:
+                    print("File is not truly random")
+            else:
+                print(f"File entropy is: {f'{entropy:.5f}'.rstrip('0').rstrip('.')}/8")
         except ValueError as e:
             print(e)
             parser.print_help()
             return None
 
 if __name__ == '__main__':
-    entropy_argparse()
+    main()

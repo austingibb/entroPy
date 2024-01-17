@@ -22,6 +22,7 @@ Run the script from the command line, providing the path to the file you want to
 
 - `-p`, `--picker`: Use the OS file picker to select a file. This option ignores any path value provided.
 - `-s`, `--sparse`: Specify the number of samples to gather for entropy calculation. Supports shorthand notations like 'k' (thousand), 'm' (million), 'b' or 'g' (billion), and 't' (trillion).
+- `-r`, `--is-random-data`: Program will provide an assessment on whether the supplied file is truly random, instead of a raw Shannon randomness number.
 
 ### Example Commands
 
