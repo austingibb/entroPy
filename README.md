@@ -1,4 +1,4 @@
-# File Entropy Calculator
+# entroPy
 
 This Python program calculates the Shannon entropy of a file, providing insights into its randomness. It is capable of processing very large files and supports sparse sampling to handle large datasets efficiently.
 
